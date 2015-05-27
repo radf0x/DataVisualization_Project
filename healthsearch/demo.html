@@ -1,0 +1,385 @@
+<html>
+	<head>
+		<meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="chrome=1">
+		<style>
+			body {
+				font-size: 16px;
+				line-height: 24px;
+				background: white;
+				color: #022;
+				height: 100%;
+				width: 100%;
+				font-family: "Palatino Linotype", "Book Antiqua", Palatino, FreeSerif, serif;
+			}
+			div.container {
+				width: 90%;
+				margin: 50px 0 0px 0px;
+			}
+			p, li {
+				margin: 0px 0 0px 0;
+			}
+			p.break {
+				margin-top: 35px;
+			}
+			ol {
+				padding-left: 24px;
+			}
+			ol li {
+				font-weight: bold;
+				margin-left: 0;
+			}
+			a, a:visited {
+				padding: 0 2px;
+				text-decoration: none;
+				background: #f0c095;
+				color: #252519;
+			}
+			a:active, a:hover {
+				color: #FFF;
+				background: #C25D00;
+			}
+			h1, h2, h3, h4, h5, h6 {
+				margin-top: 0px;
+			}
+			b.header {
+				font-size: 18px;
+			}
+			span.alias {
+				font-size: 14px;
+				font-style: italic;
+				margin-left: 0px;
+			}
+			table {
+				margin: 0px 0;
+				width: 100%;
+				max-width: 100%;
+				padding: 4px;
+			}
+			.demo-hint {
+				font-size: 13px;
+				margin: 0 0 0px 0px;
+				font-weight: normal;
+			}
+			#VS code, #VS pre, #VS tt {
+				font-family: Monaco, Consolas, "Lucida Console", monospace;
+				font-size: 12px;
+				line-height: 18px;
+				color: #444;
+				background: none;
+			}
+			#VS code {
+				margin-left: 0px;
+				padding: 0 0 0 12px;
+				font-weight: normal;
+			}
+			#VS pre {
+				font-size: 12px;
+				padding: 2px 0 2px 0;
+				border-left: 6px solid #829C37;
+				margin: 0px 0;
+			}
+			#search_query {
+				margin: 0px 0;
+				opacity: 0;
+			}
+			#search_query .raquo {
+				font-size: 18px;
+				line-height: 12px;
+				font-weight: bold;
+				margin-right: 4px;
+			}
+			#search_query2 {
+				margin: 0px 0;
+				opacity: 0;
+			}
+			#search_query2 .raquo {
+				font-size: 18px;
+				line-height: 12px;
+				font-weight: bold;
+				margin-right: 4px;
+			}
+		</style>
+
+		<link rel="stylesheet" href="lib/css/reset.css" type="text/css" media="screen" charset="utf-8">
+		<link rel="stylesheet" href="lib/css/icons.css" type="text/css" media="screen" charset="utf-8">
+		<link rel="stylesheet" href="lib/css/workspace.css" type="text/css" media="screen" charset="utf-8">
+
+		<script src="vendor/jquery-1.9.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="vendor/jquery.ui.core.js" type="text/javascript" charset="utf-8"></script>
+		<script src="vendor/jquery.ui.widget.js" type="text/javascript" charset="utf-8"></script>
+		<script src="vendor/jquery.ui.position.js" type="text/javascript" charset="utf-8"></script>
+		<script src="vendor/jquery.ui.menu.js" type="text/javascript" charset="utf-8"></script>
+		<script src="vendor/jquery.ui.autocomplete.js" type="text/javascript" charset="utf-8"></script>
+		<script src="vendor/underscore-1.4.3.js" type="text/javascript" charset="utf-8"></script>
+		<script src="vendor/backbone-0.9.10.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/visualsearch.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/views/search_box.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/views/search_facet.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/views/search_input.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/models/search_facets.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/models/search_query.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/utils/backbone_extensions.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/utils/hotkeys.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/utils/jquery_extensions.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/utils/search_parser.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/utils/inflector.js" type="text/javascript" charset="utf-8"></script>
+		<script src="lib/js/templates/templates.js" type="text/javascript" charset="utf-8"></script>
+		<script src="requiredapi.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/ajax.js"></script>
+	</head>
+	<body>
+		<div class="container" id="VS">
+			<div id="search_box_container2"></div>
+			<div id="search_query2"></div>
+			<div id="result"></div>
+			<script type="text/javascript" charset="utf-8">
+				var resultStr = "";
+				$(document).ready(function() {
+					var visualSearch = VS.init({
+						container : $('#search_box_container2'),
+						query : '',
+						minLength : 0,
+						showFacets : true,
+						placeholder : "Make your wish here...",
+						callbacks : {
+							search : function(query, searchCollection) {
+								resultStr = searchCollection.serialize();
+								$('#search_query2').stop().animate({ opacity : 1 }, { duration : 100, queue : false });
+								$('#search_query2').html('<span class="raquo">&raquo;</span> You searched for: <b>' + resultStr + '</b>');
+								sendData(resultStr);
+							},
+							valueMatches : function(category, searchTerm, callback) {
+								switch (category) {
+									case 'Beans and Legumes':
+										callback([
+											'Baked_Beans', 'Beans', 'Black_Beans', 
+											'Chickpeas', 'Green_Beans', 'Kidney_Beans', 
+											'Lentils', 'Lima_Beans', 'Pinto_Beans', 'Quinoa', 
+											'Refried_Beans', 'Tofu'
+										]);
+										break;
+									case 'Beverages':
+										callback([
+											'Alcohol', 'Apple_Juice', 'Beer', 
+											'Cappuccino', 'Chocolate_Milk', 'Cocktails', 
+											'Cocoa', 'Coffer', 'Cranberry_Juice', 
+											'Drink_Mixes', 'Energy_Drinks', 'Fruit_Punch', 
+											'Ice_Cream_Sodas', 'Iced_Coffee', 'Iced_Tea', 
+											'Juice', 'Latte', 'Lemonade', 'Milk', 
+											'Milk_Shakes', 'Orange_Juice', 'Red_Wine', 
+											'Root_Beer', 'Smoothies', 'Sodas', 'Soy_Milk', 
+											'Tea', 'Vegetable_Juice', 'Vodka', 'Water', 
+											'White_Wine', 'Wine'
+										]);
+										break;
+									case 'Bread and Cereals':
+										callback([
+											'Bagels', 'Biscuits', 'Bread', 
+											'Breadsticks', 'Buns', 'Cereal', 
+											'Cornbread', 'Croissants', 'English_Muffins', 
+											'Flatbread', 'Focaccia', 'Garlic_Bread', 'Granola', 
+											'Muesli', 'Multigrain Bread', 'Naan', 'Oatmeal', 
+											'Oats', 'Pita_Bread', 'Potato_Bread', 'Raisin_Bread', 
+											'Rolls', 'Rye_Bread', 'Scones', 'Sourdough_Bread', 
+											'Toast', 'Tortillas', 'Wheat_Bread', 'White_Bread', 
+											'Whole_Wheat_Bread', 'Wraps'
+										]);
+										break;
+									case 'Cheese Milk and Dairy':
+										callback([
+											'American_Cheese', 'Blue_Cheese', 'Brie_Cheese', 
+											'Butter', 'Buttermilk', 'Camembert_Cheese', 
+											'Cheddar_Cheese', 'Cheese', 'Colby_Cheese', 
+											'Cottage_Cheese', 'Cream', 'Cream_Cheese', 
+											'Feta_Cheese', 'Goats_Cheese', 'Gorgonzola_Cheese', 
+											'Gouda_Cheese', 'Half_and_Half', 'Havarti_Cheese', 
+											'Margarine', 'Mexican_Cheese', 'Milk', 
+											'Mozzarella_Cheese', 'Muenster_Cheese', 
+											'Parmesan_Cheese', 'Provolone_Cheese', 'Ricotta_Cheese', 
+											'Romano_Cheese', 'Skim_Milk', 'Sour_Cream', 
+											'String_Cheese', 'Swiss_Cheese', 'Yogurt'
+										]);
+										break;
+									case 'Eggs':
+										callback([
+											'Egg_Whites', 'Egg_Yolks', 'Fried_Eggs', 
+											'Hard_Boiled_Eggs', 'Omelets', 'Poached_Eggs', 
+											'Scrambled_Eggs'
+										]);
+										break;
+									case 'Fastfood':
+										callback([
+											'Burgers', 'Burritos', 'Calzones', 'Cheese_Pizza', 
+											'Cheeseburgers', 'Chicken_Nuggets', 'Curries', 
+											'Enchiladas', 'Fajitas', 'French_Fries', 'Hamburgers', 
+											'Hash_Browns', 'Hot_Dogs', 'Nachos', 'Onion_Rings', 
+											'Pepperoni_Pizza', 'Pizza', 'Quesadillas', 'Tacos', 
+											'Tostadas', 'Veggie_Burgers'
+										]);
+										break;
+									case 'Fish and Seafood':
+										callback([
+											'Anchovies', 'Calamari', 'Carp', 
+											'Catfish', 'Clams', 'Cod', 'Crab', 
+											'Crawfish', 'Eel', 'Fish', 'Flounder', 
+											'Haddock', 'Halibut', 'Herring', 'Lobster', 
+											'Mackerel', 'Mahi_Mahi', 'Mussels', 'Octopus', 
+											'Oysters', 'Salmon', 'Sardines', 'Scallops', 
+											'Seafood', 'Shrimp', 'Smoked_Salmon', 'Snapper', 
+											'Squid', 'Swordfish', 'Tilapia', 'Trout', 'Tuna'
+										]);
+										break;
+									case 'Fruit':
+										callback([
+											'Apples', 'Apricots', 'Avocados', 'Bananas', 
+											'Berries', 'Blackberries', 'Blueberries', 
+											'Cantaloupe', 'Cherries', 'Coconuts', 
+											'Cranberries', 'Dates', 'Dried_Fruit', 
+											'Figs', 'Fruit_Salad', 'Grapefruits', 
+											'Grapes', 'Honeydew_Melons', 'Kiwifruit', 
+											'Litchis', 'Mandarin_Oranges', 'Mangos', 'Melons', 
+											'Nectarines', 'Oranges', 'Papayas', 'Peaches', 'Pears', 
+											'Pineapples', 'Plums', 'Prunes', 'Raisins', 'Raspberries', 
+											'Strawberries'
+											]);
+										break;
+									case 'Meat':
+										callback([
+											'Bacon', 'Beef', 'Bologna', 'Brisket', 
+											'Chicken', 'Chicken_Breast', 'Chicken_Drumsticks', 'Chicken_Thights', 
+											'Chicken_Wings', 'Corned_Beef', 'Duck', 'Fried_Chicken', 
+											'Grilled_Chicken', 'Ground_Beef', 'Ground_Chicken', 'Ground_Pork', 
+											'Ground_Turkey', 'Ham', 'Lamb', 'Lamb_Chops', 
+											'Meatballs', 'Meatloaf', 'Pastrami', 'Pepperoni', 
+											'Pork', 'Pork_Chops', 'Ribs', 'Roast_Beef', 
+											'Roasted_Chicken', 'Roast_Pork', 'Roast_Turkey', 'Salami', 
+											'Sausages', 'Steak', 'Turkey', 'Turkey_Bacon', 'Turkey_Breast', 'Veal'
+											]);
+										break;
+									case 'Nuts and Seeds':
+										callback([
+											'Almonds', 'Brazil_Nuts', 'Cashews', 'Chestnuts', 
+											'Macadamia_NUts', 'Mixed_Nuts', 'NUts', 'Peanuts', 
+											'Pecans', 'Pine_Nuts', 'Pistachios', 'Seeds', 
+											'Soy_Nuts', 'Sunflower_Seeds', 'Walnuts'
+											]);
+										break;
+									case 'Pasta Rice and Noodles':
+										callback([
+											'Brown_Rice', 'Couscous', 'Fried_Rice', 'Gnocchi', 
+											'Jambalaya', 'Lasagna', 'Macaroni', 'Macaroni_and_Cheese', 
+											'Noodles', 'Paella', 'Pasta', 'Pilaf', 'Polenta', 'Ravioli', 
+											'Rice', 'Risotto', 'Spaghetti', 'Tortellini', 'White_Rice', 
+											'Wild_Rice'
+											]);
+										break;
+									case 'Salads':
+										callback([
+											'Caesar_Salad', 'Chicken_Salad', 'Egg_Salad', 
+											'Garden_Salad', 'Greek_Salad', 'Pasta_Salad', 
+											'Salads', 'Taco_Salad', 'Tuna_Salad'
+											]);
+										break;
+									case 'Sauces Spice and Spreads':
+										callback([
+											'Applesauce', 'Barbecue_Sauce', 'Caesar_Dressing', 
+											'Chutney', 'Dips', 'French_Dressing', 'Gravy', 'Guacamole', 
+											'Honey', 'Hummus', 'Italian_Dressing', 'Jams', 'Ketchup', 
+											'Maple_Syrup', 'Mayonnaise', 'Mustard', 'Olive_Oil', 
+											'Pasta_Sauce', 'Peanut_Butter', 'Pepper', 
+											'Ranch_Dressing', 'Relish', 'Salad_Dressing', 'Salsa', 
+											'Salt', 'Sauces', 'Seasoning', 'Soy_Sauce', 'Sugar', 
+											'Sweetener', 'Syrup', 'Tahini', 'Teriyaki_Sauce', 'Vegetable_Oil', 
+											'Vinaigrette', 'Vinegar'
+											]);
+										break;
+									case 'Snacks':
+										callback([
+											'Cereal_Bars', 'Chips', 'Corn_Chips', 'Crackers', 
+											'Granoia_Bars', 'Gum', 'Jerky', 'Nutrition_Bars', 'Popcorn', 
+											'Potato_Chips', 'Pretzels', 'Rice_Cake', 'Sandwiches', 'Sushi', 
+											'Tortilla_Chips', 'Trail_Mix'
+											]);
+										break;
+									case 'Soups':
+										callback([
+											'Bisque', 'Broth', 'Chicken_Soup', 'Chilli', 'Chowders', 
+											'Gumbo', 'Miso_Soup', 'Noodle_Soup', 'Soups', 'Stews', 
+											'Tomato_Soup'
+											]);
+										break;
+									case 'Sweets Candy and Desserts':
+										callback([
+											'Brownies', 'Cakes', 'Candies', 'Cheesecake', 'Chocolate', 
+											'Cookies', 'Crepes', 'Cupcakes', 'Custard', 'Dark_Chocolate', 
+											'Donuts', 'Frozen_Yogurt', 'Fudge', 'Ice_Cream_Cones', 
+											'Ice_creams', 'Ice_Pop', 'Licorice', 'Marchmallows', 'Muffins', 
+											'Pancakes', 'Pastries', 'Pies', 'Puddings', 'Soft_Serve_Ice_Creams', 
+											'Sorbet', 'Souffle', 'Strudels', 'Sundaes', 'Sweet_Rolls', 'Wafers', 
+											'Waffles'
+											]);
+										break;
+									case 'Vegetables':
+										callback([
+											'Artichokes', 'Asparagus', 'Baby_Carrots', 'Baked_Potatoes', 'Beets', 
+											'Brocoli', 'Brussels_Sprouts', 'Cabbage', 'Carrots', 'Cauliflower', 
+											'Celery', 'Cherry_Tomatoes', 'Corn', 'Cornonthe_Cob', 'Cucumbers', 
+											'Edamame', 'Eggplant', 'Garlic', 'Green_Peas', 'Jalapenos', 'Kale', 
+											'Leeks', 'Lettuce', 'Mashed_Potatos', 'Mixed_Vegetables', 'Mushrooms', 
+											'Okra', 'Olives', 'Onions', 'Parsnips', 'Peas', 'Peppers', 'Pickles', 
+											'Potatoes', 'Pumpkins', 'Radishes', 'Spinach', ' Squash', 'Succotash', 
+											'Sweet_Potato', 'Tomatoes', 'Turnips', 'Yam', 'Zucchini'
+											]);
+										break;
+									case 'Nutrient':
+										callback([
+											'fat', 'carbs', 'prot', 'calories', 'net_carbs', 'sugar', 'fiber', 
+											'total_carbs', 'trans', 'mono', 'poly', 'sat', 'total_fat', 
+											'protein', 'sodium', 'cholesterol', 'iron', 'calcium', 'vitamin_a', 
+											'vitamin_c'
+											]);
+										break;
+								}
+							},
+							facetMatches : function(callback) {
+								callback([
+									{ label : 'Beans and Legumes', category : 'Category'}, { label : 'Beverages', category : 'Category'}, 
+									{ label : 'Bread and Cereals', category : 'Category'}, { label : 'Cheese Milk and Dairy', category : 'Category'}, 
+									{ label : 'Eggs', category : 'Category'},{ label : 'Fastfood', category : 'Category'},
+									{ label : 'Fish and Seafood', category : 'Category'},{ label : 'Fruit', category : 'Category'}, 
+									{ label : 'Meat', category : 'Category'},{ label : 'Nuts and Seeds', category : 'Category'}, 
+									{ label : 'Pasta Rice and Noodles', category : 'Category'}, { label : 'Salads', category : 'Category'}, 
+									{ label : 'Sauces Spices and Spreads', category : 'Category'}, { label : 'Snacks', category : 'Category' }, 
+									{ label : 'Soups', category : 'Category'}, { label : 'Sweets Candy and Desserts',category : 'Category'}, 
+									{ label : 'Vegetables',category : 'Category'}, { label : 'Other',category : 'Category'}, 
+									{ label : 'Fat',category : 'Nutrient'}, { label : 'Carbs',category : 'Nutrient'}, 
+									{ label : 'Calories',category : 'Nutrient'}, { label : 'Net_carbs',category : 'Nutrient'}, 
+									{ label : 'Sugar',category : 'Nutrient'}, { label : 'Fiber',category : 'Nutrient'}, 
+									{ label : 'Total_carbs',category : 'Nutrient'}, { label : 'Trans',category : 'Nutrient'}, 
+									{ label : 'Mono',category : 'Nutrient'}, { label : 'Poly',category : 'Nutrient'}, 
+									{ label : 'Sat',category : 'Nutrient'}, { label : 'Total_fat',category : 'Nutrient'}, 
+									{ label : 'Protein',category : 'Nutrient'}, { label : 'Sodium',category : 'Nutrient'}, 
+									{ label : 'Chlesterol',category : 'Nutrient'}, { label : 'Iron',category : 'Nutrient'}, 
+									{ label : 'Calcium',category : 'Nutrient'}, { label : 'Vitamin_a',category : 'Nutrient'}, 
+									{ label : 'Vitamin_c',category : 'Nutrient'}], { preserveOrder : true } );
+							}
+						}
+					});
+				});
+				function getResult(resultStr) {
+					var tmpResult = resultStr;
+					if (tmpResult != "")
+						sendData(tmpResult);
+				}
+				function sendData(in_result) {
+					$.post('showData.php', { value : in_result }, function(data) {
+						$("#result").html(data);
+						console.log(data);
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>
+

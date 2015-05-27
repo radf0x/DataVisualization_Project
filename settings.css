@@ -1,0 +1,45 @@
+.defaultFont1{
+font-family:'HelveticaNeue-UltraLight',Helvetica,Arial,sans-serif;
+}
+.defaultFont2{
+font-family:'Helvetica-Light',Helvetica,Arial,sans-serif;
+letter-spacing: 3pt;
+}
+.defaultFont3{
+font-family:'Helvetica-Light',Helvetica,Arial,sans-serif;
+letter-spacing: 6pt;
+}
+.defaultFont4{
+font-family:'HelveticaNeue-UltraLight',Helvetica,Arial,sans-serif;
+letter-spacing: 2pt;
+}
+.home_loginFormFont{
+font-size: 40px;
+color: white;
+}
+.boxTextWhite{
+color: white;
+}
+
+.tableTrCSS1{
+-webkit-transition: background-color 0.4s ease 0s;
+-ms-transition: background-color 0.4s ease 0s;
+-moz-transition: background-color 0.4s ease 0s;
+-o-transition: background-color 0.4s ease 0s;
+transition: background-color 0.4s ease 0s;
+}
+.tableTrCSS1:hover{
+background-color: rgba(255,255,255,0.4);
+}
+
+.bottomBarButton{
+background-color: rgba(0,0,0,0.8);
+-webkit-transition: background-color 0.4s ease 0s;
+-ms-transition: background-color 0.4s ease 0s;
+-moz-transition: background-color 0.4s ease 0s;
+-o-transition: background-color 0.4s ease 0s;
+transition: background-color 0.4s ease 0s;
+}
+.bottomBarButton:hover{
+background-color: silver;
+}

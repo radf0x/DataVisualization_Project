@@ -1,0 +1,69 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Chat Room - SE</title>
+<link rel="stylesheet" href="settings.css"></link>
+<script type="text/javascript" src="ddjs_v7-8.js"></script>
+<script type="text/javascript" src="requiredapi.js"></script>
+</head>
+<body topmargin="0" leftmarign="0">
+
+<center><h1>Chat Room Lite</h1></center>
+
+
+sgrdhtyMessage:<br />
+<div id="msgDiv" style="background-color:silver;width:98%;height:50%;overflow:auto;"></div>
+
+<br /><br />
+<input id="msgTextBox" type="text" placeholder="The Message." onKeyDown="msgTBKD(event);" autofocus />
+<input type="button" onClick="sendMsg();" value="Send" />
+
+
+<script type="text/javascript">
+var shownMsg=[];
+var uid=null;
+
+ddjs_createXMLHttpRequest2('ser_chatroom.php?request=getUID',{allow:'yes'},'text',function(msg){
+if(msg){
+uid=msg;
+receiveMsg();
+}
+},null);
+
+function msgTBKD(event){
+if(event.keyCode==13){
+sendMsg();
+}
+}
+
+function sendMsg(){
+ddjs_createXMLHttpRequest2('ser_chatroom.php?request=sendMsg',{msgContent:objv('msgTextBox')},'json',function(msg){
+if(msg.state=='Successful.'){
+msgDiv.innerHTML=msgDiv.innerHTML+"<br /><br />You:<br />"+objv('msgTextBox');
+shownMsg.push({msgId:msg.msgId, msgContent:objv('msgTextBox')});
+obj('msgTextBox').value='';
+}
+},null);
+}
+
+function receiveMsg(){
+ddjs_createXMLHttpRequest2('ser_chatroom.php?request=receiveMsg',{allow:'yes'},'json',function(msg){
+for(var j in msg){
+var isNewMsg=true;
+for(var k in shownMsg){
+if(shownMsg[k].msgId==msg[j].msgId)isNewMsg=false;
+}
+if(isNewMsg==true)shownMsg.push({msgId:msg[j].msgId, msgContent:msg[j].msgContent});
+if(isNewMsg==true){
+var un=msg[j].msgSender;
+if(uid==un)un='You';
+msgDiv.innerHTML=msgDiv.innerHTML+"<br /><br />"+un+":<br />"+msg[j].msgContent;
+}
+}
+},null);
+}
+
+var reLoop=setInterval("receiveMsg()",35000);
+</script>
+</body>
+</html>
